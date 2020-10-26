@@ -7,6 +7,7 @@ import ConnectedTo from "./components/ConnectedTo";
 const socket = io(`https://linky-server.herokuapp.com/`);
 
 const initialState = {
+  connected: false,
   stream: undefined,
   latest: undefined,
   links: [],
@@ -27,16 +28,27 @@ function reducer(state = initialState, action = { type: "undefined" }) {
         links: state.latest ? [state.latest, ...state.links] : state.links,
       };
     }
+    case "SET_CONNECTED": {
+      return {
+        ...state,
+        connected: true,
+      };
+    }
     default:
       return state;
   }
 }
 
 const App = () => {
-  const [{ stream, latest, links: meta }, dispatch] = useReducer(
+  const [{ connected, stream, latest, links: meta }, dispatch] = useReducer(
     reducer,
     initialState
   );
+  useEffect(() => {
+    fetch("https://linky-server.herokuapp.com/").then(() => {
+      dispatch({ type: "SET_CONNECTED" });
+    });
+  }, []);
 
   const { handleSubmit, register } = useForm();
 
@@ -58,6 +70,16 @@ const App = () => {
     socket.on("message", handleMetaData);
     return () => socket.off(handleMetaData);
   }, []);
+
+  if (!connected) {
+    return (
+      <div className="app">
+        <div className="search">
+          <h1>...Loading</h1>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app">
