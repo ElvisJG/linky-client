@@ -6,7 +6,7 @@ const Pane = ({ meta }) => {
   return (
     <div className="pane">
       <a href={ogUrl} target="_blank" rel="noopener noreferrer">
-        <img className="pane-image" src={ogImage.url} />
+        <img className="pane-image" src={ogImage.url} alt={ogTitle} />
       </a>
       <h1 className="pane-title">{ogTitle}</h1>
     </div>
